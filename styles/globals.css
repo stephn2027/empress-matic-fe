@@ -22,3 +22,40 @@ code:not([class*='language-']):after {
 code[class*='language-'] {
   padding: 0;
 }
+
+.stacks-container {
+  height: 18vh;
+  margin-top: -16rem;
+
+  @include xs {
+    margin: 2rem 0 -2rem 0;
+    width: 90vw;
+  }
+
+  .stacks-header li {
+    width: 90%;
+    display: flex;
+    justify-content: space-evenly;
+    @include xs {
+      width: 12vw;
+      margin-inline: 0 auto;
+    }
+  }
+  .tech-stacks {
+    transform: translateY(0px);
+  }
+  .open-tab {
+    transition: ease-in 3s;
+    animation: insertFromBottom 0.5s ease;
+  }
+  @keyframes insertFromBottom {
+    from {
+      opacity: 0;
+      transform: translateY(80px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+  }
+}
