@@ -11,7 +11,7 @@ const AdminPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Laundry Shop Admin</h1>
+      <h1>Laundry Shop Service</h1>
       <LaundryForm onSubmit={handleFormSubmit} />
     </div>
   );

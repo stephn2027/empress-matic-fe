@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import { styled, useTheme } from '@mui/material/styles'
+import Router from 'next/router';
 
 // Styled component for the triangle shaped background image
 const TriangleImg = styled('img')({
@@ -37,7 +38,7 @@ const AdminCard = () => {
         <Typography variant='h5' sx={{ my: 4, color: 'primary.main' }}>
           $42.8k
         </Typography>
-        <Button size='small' variant='contained'>
+        <Button size='small' variant='contained' onClick={()=>Router.push({pathname:'/laundry-form'})}>
           New case
         </Button>
         <TriangleImg alt='triangle background' src={`/images/misc/${imageSrc}`} />
