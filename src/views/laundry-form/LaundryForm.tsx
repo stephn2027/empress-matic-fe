@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
+// components/LaundryForm.tsx
+
+import React, { useState } from 'react'
+import { Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import dayjs, { Dayjs } from 'dayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 interface LaundryFormProps {
   onSubmit: (data: LaundryFormData) => void
@@ -12,36 +16,47 @@ export interface LaundryFormData {
   phoneNumber: string
   serviceType: string
   address: string
-  numOfItems: number
-  itemsWeight: number
+  numOfItems: string
+  itemsWeight: string
   paymentType: string
-  amountTotal: number
-  pricePerKg: number
+  amountTotal: string
+  pricePerKg: string
+  deliveryDate: string
+  pickUpDate:string
 }
 
-const LaundryForm = ({ onSubmit }: LaundryFormProps): JSX.Element => {
-  const [amountTotal, setAmoutTotal] = useState(0)
-
+const LaundryForm: React.FC<LaundryFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState<LaundryFormData>({
     customerName: '',
     phoneNumber: '',
     serviceType: '',
     address: '',
-    numOfItems: 0,
-    itemsWeight: 0,
+    numOfItems: '',
+    itemsWeight: '',
     paymentType: '',
-    pricePerKg: 0,
-    amountTotal: amountTotal
+    pricePerKg: '',
+    amountTotal: '',
+    deliveryDate: '',
+    pickUpDate:'',
   })
 
-  useEffect(() => {
-    setAmoutTotal(formData.itemsWeight * formData.pricePerKg)
-  }, [formData])
+  React.useEffect(() => {
+    if (formData.itemsWeight && formData.pricePerKg) {
+      const newAmountTotal = (
+        parseFloat(formData.itemsWeight) * parseFloat(formData.pricePerKg)
+      ).toFixed(2); // Format to two decimal places
+      setFormData({ ...formData, amountTotal: newAmountTotal });
+    }
+  }, [formData.itemsWeight, formData.pricePerKg]);
 
+  const [dateDelivered, setDateDelivered] = React.useState<Dayjs | null>(dayjs(new Date()))
+  const [datePickUp, setDatePickUp] = React.useState<Dayjs | null>(dayjs(new Date()))
+  
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
     setFormData({ ...formData, [name]: value })
   }
+
   const handleSelectChange = (event: React.ChangeEvent<{ name: string; value: any }>) => {
     const { name, value } = event.target
     setFormData({ ...formData, [name]: value as any })
@@ -52,93 +67,20 @@ const LaundryForm = ({ onSubmit }: LaundryFormProps): JSX.Element => {
     onSubmit(formData)
   }
 
+  const handleDateChange = (date: string,dateCode:number) => {
+    if(dateCode === 1){
+        setDateDelivered(dayjs(date))
+        setFormData({ ...formData, deliveryDate: date })
+    }else if(dateCode === 2){
+        setDatePickUp(dayjs(date))
+        setFormData({ ...formData, pickUpDate: date })
+    }
+   
+  }
+
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl fullWidth variant='outlined' margin='normal'>
-        <InputLabel id='service-type-label'>Service Type</InputLabel>
-        <Select
-          labelId='service-type-label'
-          id='service-type-select'
-          name='serviceType'
-          value={formData.serviceType}
-          onChange={handleSelectChange}
-          label='Service Type'
-        >
-          <MenuItem value='dry_cleaning'>Dry Cleaning</MenuItem>
-          <MenuItem value='wash_and_fold'>Wash and Fold</MenuItem>
-          <MenuItem value='ironing'>Ironing</MenuItem>
-        </Select>
-      </FormControl>
-      {/* start of clothes computation */}
-      <FormControl sx={{ m: 2 }} variant='standard'>
-        <InputLabel htmlFor='demo-customized-textbox'></InputLabel>
-        <TextField
-          name='itemsWeight'
-          label='Weight in Kg'
-          variant='outlined'
-          size='medium'
-          margin='normal'
-          value={formData.itemsWeight}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-      <FormControl sx={{ m: 2 }} variant='standard'>
-        <InputLabel id='number-of-items-label'></InputLabel>
-        <TextField
-          name='numOfItems'
-          label='Item Count'
-          variant='outlined'
-          fullWidth
-          margin='normal'
-          value={formData.numOfItems}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-      <FormControl sx={{ m: 2 }} variant='standard'>
-        <InputLabel id='price-per-kg'></InputLabel>
-        <TextField
-          name='pricePerKg'
-          label='Price / Kg'
-          variant='outlined'
-          fullWidth
-          margin='normal'
-          value={formData.pricePerKg}
-          onChange={handleInputChange}
-        />
-      </FormControl>
-
-      <FormControl sx={{ paddingBlock: 4, m: 2 }} variant='outlined'>
-        <InputLabel htmlFor='payment-type-label'>Payment Type</InputLabel>
-        <Select
-          labelId='payment-type-label'
-          id='payment-type-select'
-          name='paymentType'
-          value={formData.paymentType}
-          onChange={handleSelectChange}
-          label='Payment Type'
-        >
-          <MenuItem value='cash'>Cash</MenuItem>
-          <MenuItem value='credit'>Credit Card</MenuItem>
-          <MenuItem value='debit'>Debit Card</MenuItem>
-          <MenuItem value='online'>Online Payments</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl sx={{ m: 2 }} variant='standard'>
-        <InputLabel id='total'></InputLabel>
-        <TextField
-          name='totalPrice'
-          label='Total'
-          variant='outlined'
-          fullWidth
-          margin='normal'
-          value={formData.amountTotal}
-          InputProps={{ readOnly: true }}
-        />
-      </FormControl>
-
-      {/* end of computation */}
-
+      <Typography variant='h4'>Laundry Form</Typography>
       <TextField
         name='customerName'
         label='Customer Name'
@@ -167,9 +109,99 @@ const LaundryForm = ({ onSubmit }: LaundryFormProps): JSX.Element => {
         onChange={handleInputChange}
       />
 
-      <Button type='submit' variant='contained' color='primary'>
-        Submit
-      </Button>
+      <FormControl fullWidth variant='outlined' margin='normal'>
+        <InputLabel id='service-type-label'>Service Type</InputLabel>
+        <Select
+          labelId='service-type-label'
+          id='service-type-select'
+          name='serviceType'
+          value={formData.serviceType}
+          onChange={handleSelectChange}
+          label='Service Type'
+        >
+          <MenuItem value='dry_cleaning'>Dry Cleaning</MenuItem>
+          <MenuItem value='wash_and_fold'>Wash and Fold</MenuItem>
+          <MenuItem value='ironing'>Ironing</MenuItem>
+        </Select>
+      </FormControl>
+      <div className='date-container'>
+        <FormControl size='small' variant='outlined' sx={{ m: 2 }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker label='Delivery Date' value={dateDelivered} onChange={date => handleDateChange(date.toString(),1)} />
+          </LocalizationProvider>
+        </FormControl>
+        <FormControl size='small' variant='outlined' sx={{ m: 2 }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker label='Pick Up Date' value={datePickUp} onChange={date => handleDateChange(date.toString(),2)} />
+          </LocalizationProvider>
+        </FormControl>
+      </div>
+
+      <FormControl sx={{ m: 2 }} variant='standard'>
+        <TextField
+          name='itemsWeight'
+          label='Weight in Kg'
+          variant='outlined'
+          size='medium'
+          margin='normal'
+          value={formData.itemsWeight}
+          onChange={handleInputChange}
+        />
+      </FormControl>
+      <FormControl sx={{ m: 2 }} variant='standard'>
+        <TextField
+          name='numOfItems'
+          label='Item Count'
+          variant='outlined'
+          size='medium'
+          margin='normal'
+          value={formData.numOfItems}
+          onChange={handleInputChange}
+        />
+      </FormControl>
+      <FormControl sx={{ m: 2 }} variant='standard'>
+        <TextField
+          name='pricePerKg'
+          label='Price / Kg'
+          variant='outlined'
+          fullWidth
+          margin='normal'
+          value={formData.pricePerKg}
+          onChange={handleInputChange}
+        />
+      </FormControl>
+      <FormControl sx={{ marginBlockStart: 6, marginInline: 2, width: 210 }} variant='outlined'>
+        <InputLabel htmlFor='payment-type-label'>Payment Type</InputLabel>
+        <Select
+          labelId='payment-type-label'
+          id='payment-type-select'
+          name='paymentType'
+          value={formData.paymentType}
+          onChange={handleSelectChange}
+          label='Payment Type'
+        >
+          <MenuItem value='cash'>Cash</MenuItem>
+          <MenuItem value='credit'>Credit Card</MenuItem>
+          <MenuItem value='debit'>Debit Card</MenuItem>
+          <MenuItem value='online'>Online Payments</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl variant='standard' sx={{ m: 2 }}>
+        <TextField
+          name='amountTotal'
+          label='Total'
+          variant='outlined'
+          size='medium'
+          margin='normal'
+          value={'₱' + formData.amountTotal}
+          InputProps={{ readOnly: true }}
+        />
+      </FormControl>
+      <div>
+        <Button type='submit' variant='contained' color='primary'>
+          Submit
+        </Button>
+      </div>
     </form>
   )
 }
