@@ -63,8 +63,8 @@ const LaundryForm: React.FC<LaundryFormProps> = ({ onSubmit }) => {
   }
 
   const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    onSubmit(formData)
+    event.preventDefault();
+    onSubmit(formData);
   }
 
   const handleDateChange = (date: string,dateCode:number) => {
