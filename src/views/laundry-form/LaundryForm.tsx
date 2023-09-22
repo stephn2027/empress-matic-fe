@@ -65,6 +65,19 @@ const LaundryForm: React.FC<LaundryFormProps> = ({ onSubmit }) => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     onSubmit(formData);
+    setFormData({
+      customerName: '',
+      phoneNumber: '',
+      serviceType: '',
+      address: '',
+      numOfItems: '',
+      itemsWeight: '',
+      paymentType: '',
+      pricePerKg: '',
+      amountTotal: '',
+      deliveryDate: '',
+      pickUpDate: '',
+    });
   }
 
   const handleDateChange = (date: string,dateCode:number) => {
@@ -79,7 +92,7 @@ const LaundryForm: React.FC<LaundryFormProps> = ({ onSubmit }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{maxWidth:'700px',margin:'0 auto'}}>
       <Typography variant='h4'>Laundry Form</Typography>
       <TextField
         name='customerName'
